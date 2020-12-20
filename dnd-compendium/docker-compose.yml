@@ -11,6 +11,7 @@ services:
       - AUTH0_CLIENT_SECRET
       - DATABASE_URL
       - FONTAWESOME_NPM_AUTH_TOKEN
+      - PROTOCOL_AND_HOST
       - RANDOMLY_GENERATED_SECRET
     networks:
       - app-network
