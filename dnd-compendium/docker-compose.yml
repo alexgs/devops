@@ -2,7 +2,7 @@ version: '3'
 
 services:
   dnd-compendium:
-    image: alexgs99/dnd-compendium
+    image: alexgs99/dnd-compendium:1.0.0
     container_name: dnd-compendium
     restart: unless-stopped
     environment:
