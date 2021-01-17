@@ -15,6 +15,7 @@ services:
       - RANDOMLY_GENERATED_SECRET
     networks:
       - app-network
+
   webserver:
     image: nginx:mainline-alpine
     container_name: webserver
