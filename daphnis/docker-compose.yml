@@ -56,7 +56,17 @@ services:
 
 volumes:
   certbot-etc:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alexgs/certbot-etc/
+      o: bind
   certbot-var:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alexgs/certbot-var/
+      o: bind
   dhparam:
     driver: local
     driver_opts:
