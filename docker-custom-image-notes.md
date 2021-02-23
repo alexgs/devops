@@ -25,3 +25,20 @@ docker push alexgs99/node:M.M.P
 docker tag alexgs99/node:1.2.0 alexgs99/node:latest
 docker push alexgs99/node:latest
 ```
+
+## Features
+
+Stuff I have in my current custom image
+
+1. Set root password
+1. Change `node` user password (I can't remember exactly how I did this, probably by changing to `root` and then setting the user's password)
+1. Install zsh, Oh My Zsh, and "Spaceship" prompt
+1. Install `vim` perhaps?
+
+## To do
+
+Make the following changes in the next version:
+
+1. Disable oh-my-zsh upgrade checks
+1. Install `less`
+1. Install `sudo`
