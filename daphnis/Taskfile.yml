@@ -1,0 +1,39 @@
+version: '3'
+
+vars:
+  INIT_NAME: postgres-init-container
+
+dotenv: ['.env']
+
+tasks:
+  down:
+    cmds:
+      - docker-compose down --remove-orphans
+    desc: Tear down the application
+
+  initialize:
+    cmds:
+      - task: initialize-0-make-directory
+      - task: initialize-1-start-container
+      - task: initialize-2-sleep
+      - task: initialize-3-stop-container
+      - echo "Initialize complete."
+    desc: Initialize the __host__ Postgres data directory
+
+  up:
+    cmds:
+      - docker-compose up -d
+    desc: Spin-up the application
+
+
+  initialize-0-make-directory: mkdir -p $DATABASE_DIRECTORY_POSTGRES
+  initialize-1-start-container: docker run --rm --name {{.INIT_NAME}} -d -p 5432:5432
+    -e POSTGRES_DB=$DATABASE_DDC_NAME
+    -e POSTGRES_HOST_AUTH_METHOD=scram-sha-256
+    -e POSTGRES_INITDB_ARGS="--auth=scram-sha-256"
+    -e POSTGRES_PASSWORD=$DATABASE_ADMIN_PASSWORD
+    -e POSTGRES_USER=$DATABASE_ADMIN_USER
+    -v $DATABASE_DIRECTORY_POSTGRES:/var/lib/postgresql/data
+    postgres:13-alpine
+  initialize-2-sleep: sleep 15s
+  initialize-3-stop-container: docker stop {{.INIT_NAME}}

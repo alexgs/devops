@@ -1,6 +1,26 @@
-version: '3'
-
 services:
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - webserver
+    command: certonly --webroot --webroot-path=/var/www/html --email alex.nebula99@gmail.com --agree-tos --no-eff-email --force-renewal -d compendium.owlbear.tech
+
+  database:
+    image: postgres:13-alpine
+    container_name: database
+    restart: unless-stopped
+    ports:
+      - "3976:5432"
+    volumes:
+      - "${DATABASE_DIRECTORY_POSTGRES}:/var/lib/postgresql/data"
+    networks:
+      - app-network
+
   dnd-compendium:
     image: alexgs99/dnd-compendium:1.0.0
     container_name: dnd-compendium
@@ -33,20 +53,20 @@ services:
       - dnd-compendium
     networks:
       - app-network
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    depends_on:
-      - webserver
-    command: certonly --webroot --webroot-path=/var/www/html --email alex.nebula99@gmail.com --agree-tos --no-eff-email --force-renewal -d compendium.owlbear.tech
 
 volumes:
   certbot-etc:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alexgs/certbot-etc/
+      o: bind
   certbot-var:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alexgs/certbot-var/
+      o: bind
   dhparam:
     driver: local
     driver_opts:

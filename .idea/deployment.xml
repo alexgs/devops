@@ -5,7 +5,7 @@
       <paths name="Daphnis">
         <serverdata>
           <mappings>
-            <mapping deploy="/deploy" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/devops" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
