@@ -28,17 +28,20 @@ docker push alexgs99/node:latest
 
 ## Features
 
-Stuff I have in my current custom image
+Stuff I do to setup my current custom image
 
 1. Set root password
 1. Change `node` user password (I can't remember exactly how I did this, probably by changing to `root` and then setting the user's password)
 1. Install zsh, Oh My Zsh, and "Spaceship" prompt
-1. Install `vim` perhaps?
+1. Install `psql`
 
 ## To do
 
 Make the following changes in the next version:
 
 1. Disable oh-my-zsh upgrade checks
+1. Update `psql` to ^13.1
 1. Install `less`
 1. Install `sudo`
+1. Install `vim`
+1. Install `netstat`
