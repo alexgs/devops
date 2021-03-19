@@ -21,16 +21,15 @@ services:
       - "traefik.http.routers.dnd-compendium.rule=Host(`compendium.owlbear.tech`)"
       - "traefik.http.services.dnd-compendium.loadbalancer.server.port=3000" # TODO Update Dockerfile to expose only this port
 
-#  electric-lounge:
-#    image: alexgs99/electric-lounge:0.1.0
-#    container_name: electric-lounge
-#    restart: unless-stopped
-#    env_file: electric-lounge.env
-#    networks:
-#      - webapp-net
-#    labels:
-#      - "traefik.http.routers.electric-lounge.rule=Host(`electriclounge.owlbear.tech`)"
-#      - "traefik.http.services.electric-lounge.loadbalancer.server.port=3000" # TODO Update Dockerfile to expose only this port
+  electric-lounge:
+    image: alexgs99/electric-lounge:0.1.1
+    container_name: electric-lounge
+    restart: unless-stopped
+    env_file: electric-lounge.env
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.http.routers.electric-lounge.rule=Host(`electriclounge.owlbear.tech`)"
 
   # https://github.com/Tecnativa/docker-socket-proxy
   soxy-proxy:
@@ -64,7 +63,7 @@ services:
       - ./traefik:/etc/traefik
     depends_on:
       - dnd-compendium
-#      - electric-lounge
+      - electric-lounge
       - soxy-proxy
     networks:
       - webapp-net
