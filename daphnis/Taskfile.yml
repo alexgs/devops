@@ -17,7 +17,7 @@ tasks:
       - task: initialize-1-start-container
       - task: initialize-2-sleep
       - task: initialize-3-stop-container
-      - echo "Initialize complete."
+      - echo "Initialization complete."
     desc: Initialize the __host__ Postgres data directory
 
   up:
@@ -25,8 +25,10 @@ tasks:
       - docker-compose up -d
     desc: Spin-up the application
 
+  # --- PRIVATE COMMANDS ---
 
   initialize-0-make-directory: mkdir -p $DATABASE_DIRECTORY_POSTGRES
+
   initialize-1-start-container: docker run --rm --name {{.INIT_NAME}} -d -p 5432:5432
     -e POSTGRES_DB=$DATABASE_DDC_NAME
     -e POSTGRES_HOST_AUTH_METHOD=scram-sha-256
@@ -35,5 +37,7 @@ tasks:
     -e POSTGRES_USER=$DATABASE_ADMIN_USER
     -v $DATABASE_DIRECTORY_POSTGRES:/var/lib/postgresql/data
     postgres:13-alpine
+
   initialize-2-sleep: sleep 15s
+
   initialize-3-stop-container: docker stop {{.INIT_NAME}}

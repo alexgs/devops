@@ -25,14 +25,15 @@ services:
     image: alexgs99/dnd-compendium:1.0.0
     container_name: dnd-compendium
     restart: unless-stopped
-    environment:
-      - AUTH0_DOMAIN
-      - AUTH0_CLIENT_ID
-      - AUTH0_CLIENT_SECRET
-      - DATABASE_URL
-      - FONTAWESOME_NPM_AUTH_TOKEN
-      - PROTOCOL_AND_HOST
-      - RANDOMLY_GENERATED_SECRET
+    env_file: dnd-compendium.env
+    networks:
+      - app-network
+
+  electric-lounge:
+    image: alexgs99/electric-lounge:0.1.0
+    container_name: electric-lounge
+    restart: unless-stopped
+    env_file: electric-lounge.env
     networks:
       - app-network
 
@@ -51,6 +52,7 @@ services:
       - dhparam:/etc/ssl/certs
     depends_on:
       - dnd-compendium
+      - electric-lounge
     networks:
       - app-network
 

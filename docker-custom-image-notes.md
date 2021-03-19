@@ -45,3 +45,4 @@ Make the following changes in the next version:
 1. Install `sudo`
 1. Install `vim`
 1. Install `netstat`
+1. Install `man`
