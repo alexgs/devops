@@ -1,0 +1,14 @@
+api:
+  dashboard: true
+entryPoints:
+  cassini:
+    address: ":59749"
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+providers:
+  docker:
+    endpoint: "http://soxy-proxy:2375"
+    exposedByDefault: false
+    network: "daphnis-net"

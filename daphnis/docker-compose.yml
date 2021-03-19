@@ -1,15 +1,4 @@
 services:
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    depends_on:
-      - webserver
-    command: certonly --webroot --webroot-path=/var/www/html --email alex.nebula99@gmail.com --agree-tos --no-eff-email --force-renewal -d compendium.owlbear.tech
-
   database:
     image: postgres:13-alpine
     container_name: database
@@ -19,7 +8,7 @@ services:
     volumes:
       - "${DATABASE_DIRECTORY_POSTGRES}:/var/lib/postgresql/data"
     networks:
-      - app-network
+      - webapp-net
 
   dnd-compendium:
     image: alexgs99/dnd-compendium:1.0.0
@@ -27,7 +16,9 @@ services:
     restart: unless-stopped
     env_file: dnd-compendium.env
     networks:
-      - app-network
+      - webapp-net
+    labels:
+      - "traefik.http.routers.dnd-compendium.rule=Host(`compendium.owlbear.tech`)"
 
   electric-lounge:
     image: alexgs99/electric-lounge:0.1.0
@@ -35,53 +26,57 @@ services:
     restart: unless-stopped
     env_file: electric-lounge.env
     networks:
-      - app-network
+      - webapp-net
+
+  # https://github.com/Tecnativa/docker-socket-proxy
+  soxy-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: soxy-proxy
+    networks:
+      - socker-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      CONTAINERS: 1
+      NETWORKS: 1
+      SERVICES: 1
+      TASKS: 1
 
   webserver:
-    image: nginx:mainline-alpine
+    image: traefik:2.4
     container_name: webserver
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      - "59749:8080" # Traefik dashboard
     volumes:
-      - web-root:/var/www/html
-      - ./nginx:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - dhparam:/etc/ssl/certs
+      - ./traefik:/etc/traefik
     depends_on:
       - dnd-compendium
       - electric-lounge
+      - soxy-proxy
     networks:
-      - app-network
+      - webapp-net
+      - socker-net
+    labels:
+    - "traefik.http.routers.dashboard.rule=Host(`cassini.owlbear.tech`))"
+    - "traefik.http.routers.dashboard.service=api@internal"
+    - "traefik.http.routers.dashboard.middlewares=cassini"
+    - "traefik.http.middlewares.cassini.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
 
-volumes:
-  certbot-etc:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/certbot-etc/
-      o: bind
-  certbot-var:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/certbot-var/
-      o: bind
-  dhparam:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/dhparam/
-      o: bind
-  web-root:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/web-root/
-      o: bind
+#volumes:
 
 networks:
-  app-network:
+  webapp-net:
     driver: bridge
+  socker-net:
+    driver: bridge
+    driver_opts:
+      encrypted: 'true' # We're passing Docker socket stuff over TCP, so encrypt
