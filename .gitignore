@@ -15,10 +15,11 @@
 **/.idea/uiDesigner.xml
 
 
-# --- AGS Additions ---
+# --- PROJECT FILES ---
 
 *.crt
 *.env
 *.pgsql
 *.sql
 .npmrc
+/daphnis/traefik/cassini-users.txt
