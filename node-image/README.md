@@ -25,6 +25,12 @@ Here's a hash of my usual admin password:
 $2y$12$c5.ZfEiBNUQSU4xFtsYjpu2YclPKnb1TmQN9V17ZhjS8wIiN8B4lu
 ```
 
+## Notes
+
+- It might be better to use [buildpack-deps][1] as the base. :shrug:
+
+[1]: https://hub.docker.com/_/buildpack-deps
+
 ## References
 
 - https://gist.github.com/trastle/798bfcbbd43a0c0162c9cdc18c4b1a9b
