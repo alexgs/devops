@@ -64,7 +64,6 @@ services:
         published: 443
         protocol: tcp
         mode: host
-      - "59749:8080" # Traefik dashboard
     volumes:
       - ./letsencrypt:/letsencrypt
       - ./traefik:/etc/traefik
@@ -75,13 +74,6 @@ services:
     networks:
       - webapp-net
       - socker-net
-    labels:
-      - "traefik.http.routers.dashboard.rule=Host(`cassini.owlbear.tech`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.middlewares=cassini"
-      - "traefik.http.middlewares.cassini.basicauth.usersfile=/etc/traefik/cassini-users.txt"
-
-#volumes:
 
 networks:
   webapp-net:

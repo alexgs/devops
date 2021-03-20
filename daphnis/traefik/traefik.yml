@@ -1,5 +1,3 @@
-api:
-  dashboard: true
 certificatesResolvers:
   daphnis-resolver:
     acme:
@@ -17,8 +15,6 @@ entryPoints:
           to: web-secure
   web-secure:
     address: ":443"
-  cassini:
-    address: ":59749"
 providers:
   docker:
     endpoint: "http://soxy-proxy:2375"
