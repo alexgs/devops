@@ -78,7 +78,9 @@ services:
 networks:
   webapp-net:
     driver: bridge
+    name: webapp-net
   socker-net:
     driver: bridge
     driver_opts:
       encrypted: 'true' # We're passing Docker socket stuff over TCP, so encrypt
+    name: socker-net
