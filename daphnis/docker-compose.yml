@@ -32,6 +32,8 @@ services:
       - webapp-net
     labels:
       - "traefik.http.routers.electric-lounge.rule=Host(`electriclounge.owlbear.tech`)"
+      - "traefik.http.routers.electric-lounge.tls=true"
+      - "traefik.http.routers.electric-lounge.tls.certresolver=daphnis-resolver"
 
   # https://github.com/Tecnativa/docker-socket-proxy
   soxy-proxy:
