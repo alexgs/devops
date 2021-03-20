@@ -17,6 +17,8 @@
 
 # --- PROJECT FILES ---
 
+!/daphnis/letsencrypt/README.md
+
 *.crt
 *.env
 *.pgsql

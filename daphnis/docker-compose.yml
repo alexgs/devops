@@ -19,6 +19,8 @@ services:
       - webapp-net
     labels:
       - "traefik.http.routers.dnd-compendium.rule=Host(`compendium.owlbear.tech`)"
+      - "traefik.http.routers.dnd-compendium.tls=true"
+      - "traefik.http.routers.dnd-compendium.tls.certresolver=daphnis-resolver"
       - "traefik.http.services.dnd-compendium.loadbalancer.server.port=3000" # TODO Update Dockerfile to expose only this port
 
   electric-lounge:
@@ -49,6 +51,8 @@ services:
     image: traefik:2.4
     container_name: webserver
     restart: unless-stopped
+    environment:
+      - DO_AUTH_TOKEN
     ports:
       - target: 80
         published: 80
@@ -60,6 +64,7 @@ services:
         mode: host
       - "59749:8080" # Traefik dashboard
     volumes:
+      - ./letsencrypt:/letsencrypt
       - ./traefik:/etc/traefik
     depends_on:
       - dnd-compendium

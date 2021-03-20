@@ -1,9 +1,21 @@
 api:
   dashboard: true
+certificatesResolvers:
+  daphnis-resolver:
+    acme:
+      dnsChallenge:
+        delayBeforeCheck: 0
+        provider: digitalocean
+      email: "alex.nebula99@gmail.com"
+      storage: /letsencrypt/acme.json
 entryPoints:
-  http:
+  web-default:
     address: ":80"
-  https:
+    http:
+      redirections:
+        entryPoint:
+          to: web-secure
+  web-secure:
     address: ":443"
   cassini:
     address: ":59749"
