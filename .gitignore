@@ -1,4 +1,4 @@
-# --- JetBrains IDEs: Android Studio, Webstorm, etc. ---
+# --- JETBRAINS ---
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
@@ -14,11 +14,16 @@
 **/.idea/dynamic.xml
 **/.idea/uiDesigner.xml
 
-
-# --- AGS Additions ---
+# --- PROJECT FILES ---
 
 *.crt
 *.env
 *.pgsql
 *.sql
 .npmrc
+/daphnis/backup/**.*
+/daphnis/letsencrypt/**.*
+/daphnis/traefik/cassini-users.txt
+
+!/daphnis/backup/README.md
+!/daphnis/letsencrypt/README.md

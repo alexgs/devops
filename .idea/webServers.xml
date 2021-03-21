@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1a82ce39-d9a7-45ee-ac2b-f4a1a93517c8" name="Daphnis" url="https://compendium.owlbear.tech/">
+        <fileTransfer rootFolder="/home/alexgs" accessType="SFTP" host="daphnis.owlbear.tech" port="22" sshConfigId="eedf2fb9-cc7b-4361-9994-c8d2224cb847" sshConfig="alexgs@daphnis.owlbear.tech:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

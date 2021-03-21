@@ -1,0 +1,21 @@
+certificatesResolvers:
+  daphnis-resolver:
+    acme:
+      dnsChallenge:
+        delayBeforeCheck: 0
+        provider: digitalocean
+      email: "alex.nebula99@gmail.com"
+      storage: /letsencrypt/acme.json
+entryPoints:
+  web-default:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: web-secure
+  web-secure:
+    address: ":443"
+providers:
+  docker:
+    endpoint: "http://soxy-proxy:2375"
+    network: "daphnis-net"

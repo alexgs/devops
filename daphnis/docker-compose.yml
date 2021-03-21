@@ -1,85 +1,86 @@
 services:
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    depends_on:
-      - webserver
-    command: certonly --webroot --webroot-path=/var/www/html --email alex.nebula99@gmail.com --agree-tos --no-eff-email --force-renewal -d compendium.owlbear.tech
-
   database:
     image: postgres:13-alpine
     container_name: database
     restart: unless-stopped
     ports:
-      - "3976:5432"
+      - "${DATABASE_PORT}:5432"
     volumes:
       - "${DATABASE_DIRECTORY_POSTGRES}:/var/lib/postgresql/data"
     networks:
-      - app-network
+      - webapp-net
 
   dnd-compendium:
     image: alexgs99/dnd-compendium:1.0.0
     container_name: dnd-compendium
     restart: unless-stopped
-    environment:
-      - AUTH0_DOMAIN
-      - AUTH0_CLIENT_ID
-      - AUTH0_CLIENT_SECRET
-      - DATABASE_URL
-      - FONTAWESOME_NPM_AUTH_TOKEN
-      - PROTOCOL_AND_HOST
-      - RANDOMLY_GENERATED_SECRET
+    env_file: dnd-compendium.env
     networks:
-      - app-network
+      - webapp-net
+    labels:
+      - "traefik.http.routers.dnd-compendium.rule=Host(`compendium.owlbear.tech`)"
+      - "traefik.http.routers.dnd-compendium.tls=true"
+      - "traefik.http.routers.dnd-compendium.tls.certresolver=daphnis-resolver"
+      - "traefik.http.services.dnd-compendium.loadbalancer.server.port=3000" # TODO Update Dockerfile to expose only this port
+
+  electric-lounge:
+    image: alexgs99/electric-lounge:0.1.3
+    container_name: electric-lounge
+    restart: unless-stopped
+    env_file: electric-lounge.env
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.http.routers.electric-lounge.rule=Host(`electriclounge.owlbear.tech`)"
+      - "traefik.http.routers.electric-lounge.tls=true"
+      - "traefik.http.routers.electric-lounge.tls.certresolver=daphnis-resolver"
+
+  # https://github.com/Tecnativa/docker-socket-proxy
+  soxy-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: soxy-proxy
+    networks:
+      - socker-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      CONTAINERS: 1
+      NETWORKS: 1
+      SERVICES: 1
+      TASKS: 1
 
   webserver:
-    image: nginx:mainline-alpine
+    image: traefik:2.4
     container_name: webserver
     restart: unless-stopped
+    environment:
+      - DO_AUTH_TOKEN
     ports:
-      - "80:80"
-      - "443:443"
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
     volumes:
-      - web-root:/var/www/html
-      - ./nginx:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - dhparam:/etc/ssl/certs
+      - ./letsencrypt:/letsencrypt
+      - ./traefik:/etc/traefik
     depends_on:
       - dnd-compendium
+      - electric-lounge
+      - soxy-proxy
     networks:
-      - app-network
-
-volumes:
-  certbot-etc:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/certbot-etc/
-      o: bind
-  certbot-var:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/certbot-var/
-      o: bind
-  dhparam:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/dhparam/
-      o: bind
-  web-root:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/alexgs/web-root/
-      o: bind
+      - webapp-net
+      - socker-net
 
 networks:
-  app-network:
+  webapp-net:
     driver: bridge
+    name: webapp-net
+  socker-net:
+    driver: bridge
+    driver_opts:
+      encrypted: 'true' # We're passing Docker socket stuff over TCP, so encrypt
+    name: socker-net
