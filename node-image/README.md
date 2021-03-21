@@ -2,28 +2,7 @@
 
 ## TODO
 
-- [x] Start with Ubuntu LTS base image
-- [x] Update packages
-- [x] Install
-  - [x] Node.js ^14.x
-  - [x] `psql` client ^13.1
-  - [x] Zsh
-  - [x] Update `npm`
-  - [x] `less`
-  - [x] `sudo`
-- [x] Default entrypoint, probably from the Node.js image
-- [x] Use a `package.json` file to track version numbers for this project
-- [x] Set password for `node` user and make sure it has `sudo` privileges
-- [x] Install for `node` user
-  - [x] Oh My Zsh
-    - [x] Spaceship prompt
-    - [x] Disable upgrade checks
-  - [x] Task
-
-Here's a hash of my usual admin password:
-```
-$2y$12$c5.ZfEiBNUQSU4xFtsYjpu2YclPKnb1TmQN9V17ZhjS8wIiN8B4lu
-```
+- [ ] Map to Git config on the host, so aliases and login details work in the container
 
 ## Notes
 
