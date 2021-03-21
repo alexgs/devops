@@ -1,4 +1,4 @@
-# How to make a custom image
+# Old notes on "How to make a custom image"
 
 1. Start a base container. This example uses the `node:12` image, but if you're adding to existing image, then you'll want to use that image, like `alexgs99/node:1.2.0`. Remember that the container has to run a command.
 
