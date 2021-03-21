@@ -11,14 +11,14 @@
   - [x] Update `npm`
   - [x] `less`
   - [x] `sudo`
-- [ ] Default entrypoint, probably from the Node.js image
-- [ ] Use a `package.json` file to track version numbers for this project
+- [x] Default entrypoint, probably from the Node.js image
+- [x] Use a `package.json` file to track version numbers for this project
 - [x] Set password for `node` user and make sure it has `sudo` privileges
-- [ ] Install for `node` user
+- [x] Install for `node` user
   - [x] Oh My Zsh
     - [x] Spaceship prompt
     - [x] Disable upgrade checks
-  - [ ] Task
+  - [x] Task
 
 Here's a hash of my usual admin password:
 ```
