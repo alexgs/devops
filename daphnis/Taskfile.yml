@@ -1,6 +1,7 @@
 version: '3'
 
 vars:
+  ELC_SERVICE: electric-lounge
   INIT_NAME: postgres-init-container
 
 dotenv: ['.env']
@@ -38,6 +39,14 @@ tasks:
       - task: private:db:initialize-2-sleep
       - task: private:db:initialize-3-stop-container
       - echo "Initialization complete."
+
+  # --- ELECTRIC LOUNGE COMMANDS ---
+
+  elc:shell:
+    cmds:
+      - "docker exec -it {{.ELC_SERVICE}} sh"
+    desc: Open a shell on the Electric Lounge container
+
 
   # --- PRIVATE COMMANDS ---
 
