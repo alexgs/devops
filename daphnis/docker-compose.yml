@@ -24,7 +24,7 @@ services:
       - "traefik.http.services.dnd-compendium.loadbalancer.server.port=3000" # TODO Update Dockerfile to expose only this port
 
   electric-lounge:
-    image: alexgs99/electric-lounge:0.1.3
+    image: alexgs99/electric-lounge:0.2.0
     container_name: electric-lounge
     restart: unless-stopped
     env_file: electric-lounge.env
