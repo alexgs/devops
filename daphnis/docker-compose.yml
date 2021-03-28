@@ -28,6 +28,8 @@ services:
     container_name: electric-lounge
     restart: unless-stopped
     env_file: electric-lounge.env
+    volumes:
+      - logs:/home/node/logs
     networks:
       - webapp-net
     labels:
@@ -74,6 +76,14 @@ services:
     networks:
       - webapp-net
       - socker-net
+
+volumes:
+  logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alexgs/devops/daphnis/logs/
+      o: bind
 
 networks:
   webapp-net:
