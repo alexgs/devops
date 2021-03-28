@@ -5,12 +5,13 @@
       <paths name="Daphnis">
         <serverdata>
           <mappings>
-            <mapping deploy="/devops" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/devops/daphnis" local="$PROJECT_DIR$/daphnis" web="/" />
+            <mapping local="$PROJECT_DIR$/../dnd-compendium" />
+            <mapping local="$PROJECT_DIR$/../electric-lounge" />
           </mappings>
           <excludedPaths>
             <excludedPath path="/devops/daphnis/letsencrypt" />
             <excludedPath local="true" path="$PROJECT_DIR$/daphnis/letsencrypt" />
-            <excludedPath local="true" path="$PROJECT_DIR$/node-image" />
             <excludedPath local="true" path="$PROJECT_DIR$/daphnis/dev-only.env" />
           </excludedPaths>
         </serverdata>
