@@ -17,6 +17,13 @@ tasks:
       - docker-compose up -d
     desc: Spin-up the application
 
+  # --- CRON JOBS --- (All hidden)
+
+  cron:capture-playlist-snapshot:
+    cmds:
+      - "docker exec -t {{.ELC_SERVICE}} node /home/node/app/.next/server/capture-playlist-snapshot.js"
+    silent: true
+
   # --- DATABASE COMMANDS ---
 
   db:psql:
@@ -46,11 +53,6 @@ tasks:
     cmds:
       - "docker exec -it {{.ELC_SERVICE}} sh"
     desc: Open a shell on the Electric Lounge container
-
-  elc:playlist:
-    cmds:
-      - "docker exec -it {{.ELC_SERVICE}} node /home/node/app/.next/server/capture-playlist-snapshot.js"
-    desc: Take a snapshot
 
   # --- PRIVATE COMMANDS ---
 
