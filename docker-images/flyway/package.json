@@ -1,0 +1,7 @@
+{
+  "name": "@alexgs99/flyway",
+  "version": "1.0.0",
+  "description": "A custom Docker image for running Flyway",
+  "license": "UNLICENSED",
+  "private": true
+}
