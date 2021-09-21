@@ -1,4 +1,4 @@
-# Custom Node.js DOcker image for local development
+# Custom Node.js Docker image for local development
 
 ## TODO
 
