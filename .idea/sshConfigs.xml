@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig host="daphnis.owlbear.tech" id="eedf2fb9-cc7b-4361-9994-c8d2224cb847" keyPath="\\wsl$\Ubuntu-20.04\home\alexgs\.ssh\id_rsa" port="22" nameFormat="DESCRIPTIVE" username="alexgs" />
+      <sshConfig connectionConfig="{&quot;serverAliveInterval&quot;:300}" host="daphnis.owlbear.tech" id="eedf2fb9-cc7b-4361-9994-c8d2224cb847" keyPath="\\wsl$\Ubuntu-20.04\home\alexgs\.ssh\id_rsa" port="22" nameFormat="DESCRIPTIVE" username="alexgs" />
     </configs>
   </component>
 </project>

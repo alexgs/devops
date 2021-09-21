@@ -1,0 +1,46 @@
+version: '3'
+
+vars:
+  VERSION_NUMBER:
+    sh: jq -r .version ./package.json
+  DOCKER_IMAGE: flyway
+  MAJOR_VERSION:
+    sh: echo {{.VERSION_NUMBER}} | cut -d. -f1
+  NPM_PATH: /usr/bin/npm
+
+tasks:
+  build:
+    cmds:
+      - task: private:docker-build
+      - task: private:docker-push-version
+      - task: private:docker-push-major
+      - task: private:docker-push-latest
+    desc: Build production Docker image and push to the public repository
+
+  version-major:
+    cmds:
+      - "{{.NPM_PATH}} version major"
+    desc: Increment major version number
+
+  version-minor:
+    cmds:
+      - "{{.NPM_PATH}} version minor"
+    desc: Increment minor version number
+
+  version-patch:
+    cmds:
+      - "{{.NPM_PATH}} version patch"
+    desc: Increment patch version number
+
+  # --- PRIVATE COMMANDS ---
+
+  private:docker-build: docker build --build-arg FONTAWESOME_NPM_AUTH_TOKEN
+    -t alexgs99/{{.DOCKER_IMAGE}}:latest
+    -t alexgs99/{{.DOCKER_IMAGE}}:{{.MAJOR_VERSION}}
+    -t alexgs99/{{.DOCKER_IMAGE}}:{{.VERSION_NUMBER}} .
+
+  private:docker-push-latest: docker push alexgs99/{{.DOCKER_IMAGE}}:latest
+
+  private:docker-push-major: docker push alexgs99/{{.DOCKER_IMAGE}}:{{.MAJOR_VERSION}}
+
+  private:docker-push-version: docker push alexgs99/{{.DOCKER_IMAGE}}:{{.VERSION_NUMBER}}
