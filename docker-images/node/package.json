@@ -1,6 +1,6 @@
 {
   "name": "@alexgs99/node",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "description": "A custom Docker image for creating dev environments",
   "license": "UNLICENSED",
   "private": true
