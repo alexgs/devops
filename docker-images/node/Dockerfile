@@ -6,12 +6,10 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install --no-install-recommends -y build-essential ubuntu-server wget
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-  && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
   && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 RUN apt-get update \
-  && apt-get install --no-install-recommends -y less nodejs postgresql-client-13 sudo zsh \
-  && npm install --global npm
+  && apt-get install --no-install-recommends -y less postgresql-client-13 sudo zsh
 # Remove package cache
 RUN rm -rf /var/lib/apt/lists/* \
   && apt clean
@@ -27,7 +25,12 @@ ENV ZSH_CUSTOM=/home/node/.oh-my-zsh/custom
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
   && git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1 \
   && ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-ADD --chown=node:node ../dot-files ./
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+RUN curl https://get.volta.sh | bash \
+  && /home/node/.volta/bin/volta install node \
+  && /home/node/.volta/bin/volta install npm
+
+# Relative to this file, build context must be `../` and path to dot-files `../dot-files`
+ADD --chown=node:node ./dot-files ./
 
 CMD [ "zsh" ]
