@@ -4,6 +4,8 @@
 
 # Let's Encrypt certificates and ACME data
 letsencrypt/
+!letsencrypt/.gitkeep
 
 # Log files
 logs/
+!logs/.gitkeep
