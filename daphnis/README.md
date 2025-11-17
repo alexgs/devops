@@ -1,5 +1,7 @@
 # Daphnis
 
+⚠️ WARNING: The `daphnis` droplet has been destroyed, and all code and config in this folder is deprecated. Do NOT use this for new deployments. This is kept for historical reference only. ⚠️
+
 Deployment and infrastructure-as-code for Daphnis.
 
 ## Cron jobs
