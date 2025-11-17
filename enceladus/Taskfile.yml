@@ -8,24 +8,24 @@ dotenv: ['.env']
 tasks:
   down:
     cmds:
-      - docker-compose down --remove-orphans
+      - docker compose down --remove-orphans
     desc: Tear down the application
 
   up:
     cmds:
-      - docker-compose up -d
+      - docker compose up -d
     desc: Spin-up the application
 
   # --- CONVEX COMMANDS ---
 
   convex:logs:
     cmds:
-      - "docker-compose logs -f {{.CONVEX_SERVICE}}"
+      - "docker compose logs -f {{.CONVEX_SERVICE}}"
     desc: Follow logs for Convex service
 
   convex:restart:
     cmds:
-      - "docker-compose restart {{.CONVEX_SERVICE}}"
+      - "docker compose restart {{.CONVEX_SERVICE}}"
     desc: Restart Convex service
 
   convex:shell:
@@ -36,12 +36,12 @@ tasks:
   convex:update:
     cmds:
       - docker pull ghcr.io/alexgs/convex:latest
-      - docker-compose up -d {{.CONVEX_SERVICE}}
+      - docker compose up -d {{.CONVEX_SERVICE}}
     desc: Pull latest Convex image and restart service
 
   # --- TRAEFIK COMMANDS ---
 
   traefik:logs:
     cmds:
-      - "docker-compose logs -f webserver"
+      - "docker compose logs -f webserver"
     desc: Follow logs for Traefik service

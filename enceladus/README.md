@@ -91,7 +91,7 @@ task convex:logs
 task traefik:logs
 
 # View all service logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### Restart Services
@@ -154,7 +154,7 @@ Using CNAME records means you only need to update the IP in one place if it chan
 1. Check logs: `task convex:logs`
 2. Verify environment variables: `docker exec convex env | grep CLERK`
 3. Verify image pulled: `docker images | grep convex`
-4. Check docker-compose syntax: `docker-compose config`
+4. Check docker-compose syntax: `docker compose config`
 
 ### Can't Access Service
 
