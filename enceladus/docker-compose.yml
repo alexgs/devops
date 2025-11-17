@@ -29,7 +29,7 @@ services:
       TASKS: 1
 
   webserver:
-    image: traefik:2.4
+    image: traefik:3.2
     container_name: webserver
     restart: unless-stopped
     ports:
