@@ -16,7 +16,7 @@ services:
       - "traefik.http.services.convex.loadbalancer.server.port=4322"
 
   webserver:
-    image: traefik:latest
+    image: traefik:3.6
     container_name: webserver
     restart: unless-stopped
     ports:
@@ -28,9 +28,7 @@ services:
         published: 443
         protocol: tcp
         mode: host
-      - target: 8080
-        published: 8080
-        protocol: tcp
+      - "127.0.0.1:8080:8080"
     volumes:
       - ./letsencrypt:/letsencrypt
       - ./traefik:/etc/traefik

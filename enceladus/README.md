@@ -118,6 +118,18 @@ task convex:shell
 task down
 ```
 
+### Access Traefik Dashboard
+
+The dashboard is only accessible from localhost for security. To access it:
+
+```bash
+# From your local machine, create an SSH tunnel
+ssh -L 8080:localhost:8080 alexgs@enceladus
+
+# Then visit in your browser
+http://localhost:8080/dashboard/
+```
+
 ## DNS Configuration
 
 Each service requires a DNS record pointing to the Enceladus droplet:

@@ -1,7 +1,5 @@
 log:
-  level: DEBUG
-
-accessLog: {}
+  level: INFO
 
 api:
   dashboard: true
