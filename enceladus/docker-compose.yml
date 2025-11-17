@@ -9,6 +9,7 @@ services:
     networks:
       - webapp-net
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.convex.rule=Host(`convex.alexgs.me`)"
       - "traefik.http.routers.convex.tls=true"
       - "traefik.http.routers.convex.tls.certresolver=enceladus-resolver"
