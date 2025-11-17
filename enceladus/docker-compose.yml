@@ -32,8 +32,6 @@ services:
     image: traefik:2.4
     container_name: webserver
     restart: unless-stopped
-    environment:
-      - DO_AUTH_TOKEN
     ports:
       - target: 80
         published: 80
