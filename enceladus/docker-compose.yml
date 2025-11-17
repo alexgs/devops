@@ -15,7 +15,7 @@ services:
       - "traefik.http.services.convex.loadbalancer.server.port=4322"
 
   webserver:
-    image: traefik:3.2
+    image: traefik:latest
     container_name: webserver
     restart: unless-stopped
     ports:
