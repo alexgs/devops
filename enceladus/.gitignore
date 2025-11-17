@@ -1,0 +1,9 @@
+# Environment files (contain secrets)
+*.env
+!*.env.example
+
+# Let's Encrypt certificates and ACME data
+letsencrypt/
+
+# Log files
+logs/
