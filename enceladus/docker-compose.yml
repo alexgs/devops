@@ -27,6 +27,9 @@ services:
         published: 443
         protocol: tcp
         mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
     volumes:
       - ./letsencrypt:/letsencrypt
       - ./traefik:/etc/traefik

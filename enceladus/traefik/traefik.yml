@@ -1,7 +1,11 @@
 log:
-  level: INFO
+  level: DEBUG
 
 accessLog: {}
+
+api:
+  dashboard: true
+  insecure: true
 
 certificatesResolvers:
   enceladus-resolver:
