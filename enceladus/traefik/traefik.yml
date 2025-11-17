@@ -16,5 +16,6 @@ entryPoints:
     address: ":443"
 providers:
   docker:
-    endpoint: "http://soxy-proxy:2375"
+    endpoint: "unix:///var/run/docker.sock"
     network: "webapp-net"
+    exposedByDefault: false

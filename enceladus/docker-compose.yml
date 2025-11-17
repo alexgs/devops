@@ -14,20 +14,6 @@ services:
       - "traefik.http.routers.convex.tls.certresolver=enceladus-resolver"
       - "traefik.http.services.convex.loadbalancer.server.port=4322"
 
-  # https://github.com/Tecnativa/docker-socket-proxy
-  soxy-proxy:
-    image: tecnativa/docker-socket-proxy
-    container_name: soxy-proxy
-    networks:
-      - socker-net
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      CONTAINERS: 1
-      NETWORKS: 1
-      SERVICES: 1
-      TASKS: 1
-
   webserver:
     image: traefik:3.2
     container_name: webserver
@@ -44,12 +30,11 @@ services:
     volumes:
       - ./letsencrypt:/letsencrypt
       - ./traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - convex
-      - soxy-proxy
     networks:
       - webapp-net
-      - socker-net
 
 volumes:
   logs:
@@ -63,8 +48,3 @@ networks:
   webapp-net:
     driver: bridge
     name: webapp-net
-  socker-net:
-    driver: bridge
-    driver_opts:
-      encrypted: 'true' # We're passing Docker socket stuff over TCP, so encrypt
-    name: socker-net

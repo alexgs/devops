@@ -8,6 +8,7 @@ Enceladus hosts personal web applications using Docker Compose with Traefik as a
 
 **Current services:**
 - **Convex**: Conversation archive application (`convex.alexgs.me`)
+- **Traefik**: Reverse proxy with automatic HTTPS
 
 ## Prerequisites
 
