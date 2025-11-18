@@ -16,11 +16,11 @@ Deploy the Skyreach D&D campaign website to the DigitalOcean Droplet "Enceladus"
 ## Skyreach D&D Application Details
 
 - **Docker image:** Available on GHCR (GitHub Container Registry)
-- **Image name:** `ghcr.io/alexgs/skyreach-web:latest` (verify exact name from your repo)
+- **Image name:** `ghcr.io/alexgs/skyreach:main`
 - **Port:** 4321 (internal container port)
-- **Domain:** `dnd.alexgs.me` (or your preferred subdomain)
+- **Domain:** `skyreach.alexgs.me`
 - **Database:** None - all campaign data is included in the Docker image at `/app/data/`
-- **Authentication:** Clerk (optional - may not be required for this app)
+- **Authentication:** Clerk (required) 
 
 ## Required Environment Variables
 
@@ -30,15 +30,12 @@ NODE_ENV=production
 HOST=0.0.0.0
 PORT=4321
 
-# Clerk auth (if needed - check if your D&D app uses authentication)
+# Clerk authentication (required)
 PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
 CLERK_SECRET_KEY=sk_live_...
-
-# FontAwesome Pro (if needed during runtime - may only be needed at build time)
-FONTAWESOME_NPM_AUTH_TOKEN=...
 ```
 
-**Note:** Review your D&D app to determine which environment variables are actually needed at runtime vs. build time. The FontAwesome token is typically only needed during `npm install`, not at runtime.
+**Note:** FontAwesome Pro token is only needed at build time during `npm install`, not at runtime, so it should not be included in the environment file.
 
 ## Tasks for Claude Code
 
@@ -47,12 +44,12 @@ FONTAWESOME_NPM_AUTH_TOKEN=...
 Add a new service for Skyreach following the Convex pattern:
 - Service name: `skyreach`
 - Container name: `skyreach`
-- Image: from GHCR (`ghcr.io/alexgs/skyreach-web:latest`)
+- Image: from GHCR (`ghcr.io/alexgs/skyreach:main`)
 - Restart policy: `unless-stopped`
 - Env file: `skyreach.env`
 - Network: `webapp-net` (existing network)
 - Traefik labels for:
-  - Router rule: `Host(`dnd.alexgs.me`)` (or your chosen subdomain)
+  - Router rule: `Host(`skyreach.alexgs.me`)`
   - TLS enabled with cert resolver: `enceladus-resolver`
   - Service port: 4321
   - HTTP to HTTPS redirect (handled automatically by Traefik config)
@@ -62,7 +59,7 @@ Add a new service for Skyreach following the Convex pattern:
 Example service definition:
 ```yaml
   skyreach:
-    image: ghcr.io/alexgs/skyreach-web:latest
+    image: ghcr.io/alexgs/skyreach:main
     container_name: skyreach
     restart: unless-stopped
     env_file: skyreach.env
@@ -70,7 +67,7 @@ Example service definition:
       - webapp-net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.skyreach.rule=Host(`dnd.alexgs.me`)"
+      - "traefik.http.routers.skyreach.rule=Host(`skyreach.alexgs.me`)"
       - "traefik.http.routers.skyreach.tls=true"
       - "traefik.http.routers.skyreach.tls.certresolver=enceladus-resolver"
       - "traefik.http.services.skyreach.loadbalancer.server.port=4321"
@@ -84,9 +81,9 @@ NODE_ENV=production
 HOST=0.0.0.0
 PORT=4321
 
-# Optional: Clerk authentication (if app requires login)
-# PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_your_key_here
-# CLERK_SECRET_KEY=sk_live_your_secret_here
+# Clerk authentication (required)
+PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_your_key_here
+CLERK_SECRET_KEY=sk_live_your_secret_here
 ```
 
 ### 3. Update Taskfile.yml
@@ -120,7 +117,7 @@ tasks:
 
   skyreach:update:
     cmds:
-      - docker pull ghcr.io/alexgs/skyreach-web:latest
+      - docker pull ghcr.io/alexgs/skyreach:main
       - docker compose up -d {{.SKYREACH_SERVICE}}
     desc: Pull latest Skyreach image and restart service
 ```
@@ -131,7 +128,7 @@ Update `README.md` to add Skyreach to the list of current services:
 
 In the "Current services" section, add:
 ```markdown
-- **Skyreach**: D&D campaign website (`dnd.alexgs.me`)
+- **Skyreach**: D&D campaign website (`skyreach.alexgs.me`)
 ```
 
 Add a new section or update existing deployment documentation with Skyreach-specific notes:
@@ -158,7 +155,7 @@ task skyreach:logs
 If the site isn't loading:
 1. Check container status: `docker ps | grep skyreach`
 2. Check logs: `task skyreach:logs`
-3. Verify DNS record: `dig dnd.alexgs.me`
+3. Verify DNS record: `dig skyreach.alexgs.me`
 4. Check Traefik routing: `task traefik:logs`
 ```
 
@@ -168,12 +165,12 @@ If the site isn't loading:
 
 Add a DNS record (either A or CNAME) pointing to Enceladus:
 ```
-dnd.alexgs.me    CNAME    enceladus.alexgs.me
+skyreach.alexgs.me    CNAME    enceladus.alexgs.me
 ```
 
 Or if using A record:
 ```
-dnd.alexgs.me    A    <Enceladus IP address>
+skyreach.alexgs.me    A    <Enceladus IP address>
 ```
 
 **Note:** CNAME is recommended as it means you only need to update one A record (for enceladus.alexgs.me) if the IP changes.
@@ -207,7 +204,7 @@ Once the code changes are complete:
    ```
 
 3. **Verify deployment:**
-  - Visit `https://dnd.alexgs.me` (or your chosen domain)
+  - Visit `https://skyreach.alexgs.me`
   - Should redirect to HTTPS with valid Let's Encrypt certificate
   - Site should load and be functional
 
@@ -215,7 +212,7 @@ Once the code changes are complete:
 
 After deployment:
 - [ ] Container starts without errors (`docker ps`)
-- [ ] Accessible at https://dnd.alexgs.me
+- [ ] Accessible at https://skyreach.alexgs.me
 - [ ] SSL certificate auto-generated by Let's Encrypt
 - [ ] Site loads correctly and is fully functional
 - [ ] Campaign data displays properly
@@ -227,7 +224,7 @@ After deployment:
 - No volumes needed for data persistence (it's in the image)
 - To update campaign content, rebuild the Docker image and run `task skyreach:update`
 - The app is stateless and can be easily replaced/updated
-- Authentication (Clerk) may not be needed if the site is meant to be public
+- Clerk authentication is required - ensure production keys are configured in `skyreach.env`
 
 ## Constraints
 
@@ -251,12 +248,12 @@ After deployment:
 - Check docker-compose syntax: `docker compose config`
 
 **Site not accessible:**
-- Verify DNS: `dig dnd.alexgs.me`
+- Verify DNS: `dig skyreach.alexgs.me`
 - Check Traefik routing: `task traefik:logs`
 - Verify container is running: `docker ps | grep skyreach`
 - Check firewall rules (ports 80 and 443 should be open)
 
 **SSL certificate issues:**
-- Verify DNS resolves correctly: `dig dnd.alexgs.me`
+- Verify DNS resolves correctly: `dig skyreach.alexgs.me`
 - Check Traefik logs: `task traefik:logs`
 - Verify `letsencrypt/acme.json` has correct permissions (600)
