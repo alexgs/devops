@@ -2,6 +2,7 @@ version: '3'
 
 vars:
   CONVEX_SERVICE: convex
+  SKYREACH_SERVICE: skyreach
 
 dotenv: ['.env']
 
@@ -38,6 +39,29 @@ tasks:
       - docker pull ghcr.io/alexgs/convex:latest
       - docker compose up -d {{.CONVEX_SERVICE}}
     desc: Pull latest Convex image and restart service
+
+  # --- SKYREACH COMMANDS ---
+
+  skyreach:logs:
+    cmds:
+      - "docker compose logs -f {{.SKYREACH_SERVICE}}"
+    desc: Follow logs for Skyreach service
+
+  skyreach:restart:
+    cmds:
+      - "docker compose restart {{.SKYREACH_SERVICE}}"
+    desc: Restart Skyreach service
+
+  skyreach:shell:
+    cmds:
+      - "docker exec -it {{.SKYREACH_SERVICE}} sh"
+    desc: Open a shell on the Skyreach container
+
+  skyreach:update:
+    cmds:
+      - docker pull ghcr.io/alexgs/skyreach:main
+      - docker compose up -d {{.SKYREACH_SERVICE}}
+    desc: Pull latest Skyreach image and restart service
 
   # --- TRAEFIK COMMANDS ---
 

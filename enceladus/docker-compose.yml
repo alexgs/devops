@@ -15,6 +15,20 @@ services:
       - "traefik.http.routers.convex.tls.certresolver=enceladus-resolver"
       - "traefik.http.services.convex.loadbalancer.server.port=4322"
 
+  skyreach:
+    image: ghcr.io/alexgs/skyreach:main
+    container_name: skyreach
+    restart: unless-stopped
+    env_file: skyreach.env
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.skyreach.rule=Host(`skyreach.alexgs.me`)"
+      - "traefik.http.routers.skyreach.tls=true"
+      - "traefik.http.routers.skyreach.tls.certresolver=enceladus-resolver"
+      - "traefik.http.services.skyreach.loadbalancer.server.port=4321"
+
   webserver:
     image: traefik:3.6
     container_name: webserver
@@ -35,6 +49,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - convex
+      - skyreach
     networks:
       - webapp-net
 

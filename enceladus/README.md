@@ -8,6 +8,7 @@ Enceladus hosts personal web applications using Docker Compose with Traefik as a
 
 **Current services:**
 - **Convex**: Conversation archive application (`convex.alexgs.me`)
+- **Skyreach**: D&D campaign website (`skyreach.alexgs.me`)
 - **Traefik**: Reverse proxy with automatic HTTPS
 
 ## Prerequisites
@@ -36,17 +37,22 @@ cd enceladus
 # Copy environment templates
 cp .env.example .env
 cp convex.env.example convex.env
+cp skyreach.env.example skyreach.env
 
-# Edit convex.env and add your actual API keys and secrets
+# Edit environment files and add your actual API keys and secrets
 nano convex.env
+nano skyreach.env
 ```
 
-Required credentials:
+**Required credentials for Convex:**
 - Clerk authentication keys (production keys from dashboard.clerk.com)
 - OpenAI API key
 - Anthropic API key
 - FontAwesome NPM auth token
 - GitHub OAuth client ID and secret
+
+**Required credentials for Skyreach:**
+- Clerk authentication keys (production keys from dashboard.clerk.com)
 
 ### 3. Create Let's Encrypt Storage
 
@@ -64,22 +70,32 @@ task up
 
 # Follow logs to verify startup
 task convex:logs
+task skyreach:logs
 task traefik:logs
 ```
 
 ### 5. Verify Deployment
 
 - Visit `https://convex.alexgs.me` - should redirect to HTTPS and show valid certificate
+- Visit `https://skyreach.alexgs.me` - should redirect to HTTPS and show valid certificate
 - Check Traefik logs for any certificate errors: `task traefik:logs`
 - Check Convex logs for application errors: `task convex:logs`
+- Check Skyreach logs for application errors: `task skyreach:logs`
 
 ## Common Operations
 
-### Deploy Updates to Convex
+### Deploy Updates
 
+**Convex:**
 ```bash
 # Pull latest image and restart service
 task convex:update
+```
+
+**Skyreach:**
+```bash
+# Pull latest image and restart service
+task skyreach:update
 ```
 
 ### View Logs
@@ -87,6 +103,9 @@ task convex:update
 ```bash
 # Follow Convex logs
 task convex:logs
+
+# Follow Skyreach logs
+task skyreach:logs
 
 # Follow Traefik logs (for routing/SSL issues)
 task traefik:logs
@@ -101,6 +120,9 @@ docker compose logs -f
 # Restart just Convex
 task convex:restart
 
+# Restart just Skyreach
+task skyreach:restart
+
 # Restart all services
 task down && task up
 ```
@@ -110,6 +132,9 @@ task down && task up
 ```bash
 # Open shell in Convex container
 task convex:shell
+
+# Open shell in Skyreach container
+task skyreach:shell
 ```
 
 ### Stop All Services
@@ -143,6 +168,7 @@ convex.alexgs.me    A    <Enceladus IP>
 ```
 enceladus.alexgs.me    A       <Enceladus IP>
 convex.alexgs.me       CNAME   enceladus.alexgs.me
+skyreach.alexgs.me     CNAME   enceladus.alexgs.me
 ```
 
 Using CNAME records means you only need to update the IP in one place if it changes.
@@ -189,6 +215,36 @@ To add another web application:
 4. Add task commands to `Taskfile.yml`
 5. Configure DNS (A or CNAME record)
 6. Start with `task up`
+
+## Application-Specific Notes
+
+### Skyreach D&D Website
+
+The Skyreach D&D campaign website is deployed as a containerized Astro SSR application with Clerk authentication.
+
+**Key details:**
+- Campaign data is baked into the Docker image at `/app/data/`
+- No volumes needed for data persistence
+- To update campaign content, rebuild the Docker image and run `task skyreach:update`
+- Requires Clerk authentication - ensure production keys are configured in `skyreach.env`
+
+**Deploy updates:**
+```bash
+task skyreach:update
+```
+
+**View logs:**
+```bash
+task skyreach:logs
+```
+
+**Troubleshooting:**
+If the site isn't loading:
+1. Check container status: `docker ps | grep skyreach`
+2. Check logs: `task skyreach:logs`
+3. Verify DNS record: `dig skyreach.alexgs.me`
+4. Check Traefik routing: `task traefik:logs`
+5. Verify Clerk credentials are correctly configured
 
 ## Directory Structure
 
