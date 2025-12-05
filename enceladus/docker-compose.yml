@@ -29,6 +29,52 @@ services:
       - "traefik.http.routers.skyreach.tls.certresolver=enceladus-resolver"
       - "traefik.http.services.skyreach.loadbalancer.server.port=4321"
 
+  plausible:
+    image: ghcr.io/plausible/community-edition:v2.1.4
+    container_name: plausible
+    restart: unless-stopped
+    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+    depends_on:
+      - plausible_db
+      - plausible_events_db
+    env_file:
+      - plausible.env
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plausible.rule=Host(`analytics.automatacodex.com`)"
+      - "traefik.http.routers.plausible.tls=true"
+      - "traefik.http.routers.plausible.tls.certresolver=enceladus-resolver"
+      - "traefik.http.services.plausible.loadbalancer.server.port=8000"
+
+  plausible_db:
+    image: postgres:16-alpine
+    container_name: plausible_db
+    restart: unless-stopped
+    volumes:
+      - plausible-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - webapp-net
+
+  plausible_events_db:
+    image: clickhouse/clickhouse-server:24.3.3.102-alpine
+    container_name: plausible_events_db
+    restart: unless-stopped
+    volumes:
+      - plausible-event-data:/var/lib/clickhouse
+      - plausible-event-logs:/var/log/clickhouse-server
+      - ./clickhouse/clickhouse-config.xml:/etc/clickhouse-server/config.d/logging.xml:ro
+      - ./clickhouse/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - webapp-net
+
   webserver:
     image: traefik:3.6
     container_name: webserver
@@ -60,6 +106,9 @@ volumes:
       type: none
       device: /home/alexgs/devops/enceladus/logs/
       o: bind
+  plausible-db-data:
+  plausible-event-data:
+  plausible-event-logs:
 
 networks:
   webapp-net:
