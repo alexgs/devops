@@ -1,4 +1,19 @@
 services:
+  actual-budget:
+    image: actualbudget/actual-server:26.2.0
+    container_name: actual-budget
+    restart: unless-stopped
+    volumes:
+      - actual-budget-data:/data
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.actual-budget.rule=Host(`budget.alexgs.me`)"
+      - "traefik.http.routers.actual-budget.tls=true"
+      - "traefik.http.routers.actual-budget.tls.certresolver=enceladus-resolver"
+      - "traefik.http.services.actual-budget.loadbalancer.server.port=5006"
+
   convex:
     image: ghcr.io/alexgs/convex:latest
     container_name: convex
@@ -94,6 +109,7 @@ services:
       - ./traefik:/etc/traefik
       - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
+      - actual-budget
       - convex
       - skyreach
     networks:
@@ -106,6 +122,7 @@ volumes:
       type: none
       device: /home/alexgs/devops/enceladus/logs/
       o: bind
+  actual-budget-data:
   plausible-db-data:
   plausible-event-data:
   plausible-event-logs:
