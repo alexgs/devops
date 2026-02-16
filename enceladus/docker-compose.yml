@@ -123,6 +123,11 @@ volumes:
       device: /home/alexgs/devops/enceladus/logs/
       o: bind
   actual-budget-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alexgs/devops/enceladus/actual-budget-data/
+      o: bind
   plausible-db-data:
   plausible-event-data:
   plausible-event-logs:
