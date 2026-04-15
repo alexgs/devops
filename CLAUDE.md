@@ -139,6 +139,5 @@ When adding a new web application:
 ## Important Notes
 
 - **Never commit** `.env` files or any files in `daphnis/backup/`
-- The repository directory on the droplet is `/home/alexgs/devops/daphnis/` (note: still uses old "daphnis" name)
+- The repository directory on the droplet is `/home/alexgs/devops/`
 - Logs for electric-lounge are stored in `daphnis/logs/` (bind mount to host)
-- Traefik network name in config is `daphnis-net` but docker-compose.yml uses `webapp-net` - verify which is correct when deploying
