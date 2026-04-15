@@ -8,7 +8,7 @@ services:
     volumes:
       - "${DATABASE_DIRECTORY_POSTGRES}:/var/lib/postgresql/data"
     networks:
-      - webapp-net
+      - daphnis-net
 
   dnd-compendium:
     image: alexgs99/dnd-compendium:1.0.0
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
     env_file: dnd-compendium.env
     networks:
-      - webapp-net
+      - daphnis-net
     labels:
       - "traefik.http.routers.dnd-compendium.rule=Host(`compendium.owlbear.tech`)"
       - "traefik.http.routers.dnd-compendium.tls=true"
@@ -31,7 +31,7 @@ services:
     volumes:
       - logs:/home/node/logs
     networks:
-      - webapp-net
+      - daphnis-net
     labels:
       - "traefik.http.routers.electric-lounge.rule=Host(`electriclounge.owlbear.tech`)"
       - "traefik.http.routers.electric-lounge.tls=true"
@@ -74,7 +74,7 @@ services:
       - electric-lounge
       - soxy-proxy
     networks:
-      - webapp-net
+      - daphnis-net
       - socker-net
 
 volumes:
@@ -86,9 +86,9 @@ volumes:
       o: bind
 
 networks:
-  webapp-net:
+  daphnis-net:
     driver: bridge
-    name: webapp-net
+    name: daphnis-net
   socker-net:
     driver: bridge
     driver_opts:
