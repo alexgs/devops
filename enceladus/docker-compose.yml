@@ -21,6 +21,7 @@ services:
     env_file: convex.env
     volumes:
       - logs:/app/logs
+      - convex-search-log:/app/web/data/search-log
     networks:
       - webapp-net
     labels:
@@ -127,6 +128,12 @@ volumes:
     driver_opts:
       type: none
       device: /home/alexgs/devops/enceladus/actual-budget-data/
+      o: bind
+  convex-search-log:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alexgs/devops/enceladus/convex-search-log/
       o: bind
   plausible-db-data:
   plausible-event-data:

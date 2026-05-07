@@ -62,7 +62,18 @@ touch letsencrypt/acme.json
 chmod 600 letsencrypt/acme.json
 ```
 
-### 4. Start Services
+### 4. Create Host Directories for Bind Mounts
+
+The Convex container persists its search log database to a host-mounted
+directory so writes survive image rebuilds and container restarts. The
+directory must exist before `docker compose up` runs, or the bind mount
+will fail.
+
+```bash
+mkdir -p convex-search-log
+```
+
+### 5. Start Services
 
 ```bash
 # Start all services
@@ -74,7 +85,7 @@ task skyreach:logs
 task traefik:logs
 ```
 
-### 5. Verify Deployment
+### 6. Verify Deployment
 
 - Visit `https://convex.alexgs.me` - should redirect to HTTPS and show valid certificate
 - Visit `https://skyreach.alexgs.me` - should redirect to HTTPS and show valid certificate
@@ -258,7 +269,8 @@ enceladus/
 │   └── traefik.yml       # Traefik configuration
 ├── letsencrypt/
 │   └── acme.json         # Let's Encrypt certificates (not committed)
-└── logs/                 # Application logs (not committed)
+├── logs/                 # Application logs (not committed)
+└── convex-search-log/    # Convex search log SQLite DB (not committed)
 ```
 
 ## Security Notes
