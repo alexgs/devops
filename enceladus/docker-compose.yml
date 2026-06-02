@@ -113,6 +113,7 @@ services:
       - actual-budget
       - convex
       - skyreach
+      - westwood
     networks:
       - webapp-net
 

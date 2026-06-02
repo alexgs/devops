@@ -3,6 +3,7 @@ version: '3'
 vars:
   CONVEX_SERVICE: convex
   SKYREACH_SERVICE: skyreach
+  WESTWOOD_SERVICE: westwood
 
 dotenv: ['.env']
 
@@ -69,3 +70,45 @@ tasks:
     cmds:
       - "docker compose logs -f webserver"
     desc: Follow logs for Traefik service
+
+  # --- WESTWOOD COMMANDS ---
+
+  westwood:logs:
+    cmds:
+      - "docker compose logs -f {{.WESTWOOD_SERVICE}}"
+    desc: Follow logs for Westwood service
+
+  westwood:restart:
+    cmds:
+      - "docker compose restart {{.WESTWOOD_SERVICE}}"
+    desc: Restart Westwood service
+
+  westwood:shell:
+    cmds:
+      - "docker exec -it {{.WESTWOOD_SERVICE}} sh"
+    desc: Open a shell on the Westwood container
+
+  westwood:update:
+    cmds:
+      - docker pull ghcr.io/alexgs/westwood:latest
+      - docker compose up -d {{.WESTWOOD_SERVICE}}
+    desc: Pull latest Westwood image and restart service
+
+  westwood:db:psql:
+    cmds:
+      - "docker exec -it westwood-db psql -U westwood -d westwood"
+    desc: Connect to the Westwood database with psql
+
+  # --- CRON JOBS --- (Hidden)
+  # Invoked by /etc/crontab on enceladus per crontab.txt; not normally
+  # called by hand.
+
+  cron:westwood-snapshot:
+    cmds:
+      - bash /home/alexgs/devops/enceladus/scripts/westwood-snapshot.sh
+    silent: true
+
+  cron:westwood-snapshot-prune:
+    cmds:
+      - bash /home/alexgs/devops/enceladus/scripts/westwood-snapshot-prune.sh
+    silent: true
