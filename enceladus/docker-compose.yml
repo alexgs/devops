@@ -79,6 +79,7 @@ services:
     image: clickhouse/clickhouse-server:24.3.3.102-alpine
     container_name: plausible_events_db
     restart: unless-stopped
+    mem_limit: 1g
     volumes:
       - plausible-event-data:/var/lib/clickhouse
       - plausible-event-logs:/var/log/clickhouse-server
@@ -113,8 +114,38 @@ services:
       - actual-budget
       - convex
       - skyreach
+      - westwood
     networks:
       - webapp-net
+
+  westwood:
+    image: ghcr.io/alexgs/westwood:latest
+    container_name: westwood
+    restart: unless-stopped
+    env_file: westwood.env
+    depends_on:
+      - westwood-db
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.westwood.rule=Host(`westwood.alexgs.me`)"
+      - "traefik.http.routers.westwood.tls=true"
+      - "traefik.http.routers.westwood.tls.certresolver=enceladus-resolver"
+      - "traefik.http.services.westwood.loadbalancer.server.port=3000"
+
+  westwood-db:
+    image: postgres:16-alpine
+    container_name: westwood-db
+    restart: unless-stopped
+    env_file: westwood-db.env
+    volumes:
+      - /mnt/blockstore/westwood-db-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - webapp-net
+
 
 volumes:
   logs:

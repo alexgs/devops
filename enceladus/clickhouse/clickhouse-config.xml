@@ -3,6 +3,8 @@
         <level>warning</level>
         <console>true</console>
     </logger>
+    <!-- 768 MB; soft cap, paired with docker mem_limit: 1g hard cap -->
+    <max_server_memory_usage>805306368</max_server_memory_usage>
     <query_log remove="remove"/>
     <query_thread_log remove="remove"/>
     <query_views_log remove="remove"/>
