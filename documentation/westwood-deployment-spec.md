@@ -501,7 +501,7 @@ Skyreach.
 **Add a new section, following the "Skyreach D&D Website" pattern at
 the bottom of "Application-Specific Notes":**
 
-```markdown
+````markdown
 ### Westwood
 
 Westwood is a single-user Twitter timeline analyzer that surfaces
@@ -587,7 +587,7 @@ If `westwood.alexgs.me` loads but mining fails:
    `task westwood:db:psql` then `SELECT * FROM x_tokens;`
 2. If empty, the bootstrap was never run — see above
 3. If present but expired, re-run the bootstrap
-```
+````
 
 ### 10. `.gitignore`
 

@@ -10,6 +10,7 @@ Enceladus hosts personal web applications using Docker Compose with Traefik as a
 - **Convex**: Conversation archive application (`convex.alexgs.me`)
 - **Skyreach**: D&D campaign website (`skyreach.alexgs.me`)
 - **Traefik**: Reverse proxy with automatic HTTPS
+- **Westwood**: Twitter timeline engagement analyzer (`westwood.alexgs.me`)
 
 ## Prerequisites
 
@@ -256,6 +257,92 @@ If the site isn't loading:
 3. Verify DNS record: `dig skyreach.alexgs.me`
 4. Check Traefik routing: `task traefik:logs`
 5. Verify Clerk credentials are correctly configured
+
+### Westwood
+
+Westwood is a single-user Twitter timeline analyzer that surfaces
+engagement recommendations via Claude. Unlike the other apps on
+enceladus, it requires a one-time OAuth bootstrap to populate its
+`x_tokens` table before live mining works.
+
+**Key details:**
+- Dedicated Postgres 16 sibling container (`westwood-db`) with data
+  on the attached block storage volume at
+  `/mnt/blockstore/westwood-db-data`. Block storage volume snapshots
+  are automated via cron + `doctl` (daily, 7-day retention) since DO
+  doesn't provide built-in volume snapshot scheduling — see "Backups"
+  below.
+- Postgres exposes `127.0.0.1:5432` on the droplet host (localhost-only)
+  for the bootstrap flow's SSH tunnel
+- Flyway migrations run at container entrypoint — slow or failing
+  migrations will block container start
+- Sign-in via Clerk hosted UI (production Clerk app, separate from dev)
+
+**First-time bootstrap (one-time, after first deploy):**
+
+From the laptop:
+```bash
+# Open an SSH tunnel forwarding laptop:5432 to enceladus:127.0.0.1:5432
+ssh -L 5432:127.0.0.1:5432 alexgs@enceladus
+
+# In a separate terminal, with DATABASE_URL pointed at localhost:5432:
+DATABASE_URL=postgresql://westwood:PASSWORD@localhost:5432/westwood \
+  task x:bootstrap
+```
+
+The OAuth PKCE flow runs on the laptop; the resulting `x_tokens` row
+lands in the production database through the tunnel. After this,
+live mining works from the deployed instance.
+
+**Deploy updates:**
+```bash
+task westwood:update
+```
+
+**View logs:**
+```bash
+task westwood:logs
+```
+
+**Database access:**
+```bash
+task westwood:db:psql
+```
+
+**Backups:**
+
+Block storage volume snapshots run via cron on enceladus (06:00 UTC
+daily snapshot, 06:30 UTC prune; canonical schedule in
+`crontab.txt`). To inspect:
+
+```bash
+# List all Westwood volume snapshots
+doctl compute snapshot list --resource volume \
+  --format ID,Name,Created,Size
+
+# Manual one-off snapshot (e.g. before a risky migration)
+task cron:westwood-snapshot
+
+# Check the cron log for snapshot/prune output
+tail -100 /home/alexgs/cron.log
+```
+
+If a scheduled snapshot didn't run, check `/home/alexgs/cron.log` and
+verify the `DIGITALOCEAN_ACCESS_TOKEN` in `.env` is still valid.
+
+**Troubleshooting:**
+If `westwood.alexgs.me` returns 502:
+1. Check container status: `docker ps | grep westwood`
+2. Check logs: `task westwood:logs` — Flyway migration failures will
+   surface here
+3. Verify the database is up: `docker ps | grep westwood-db`
+4. Check Traefik routing: `task traefik:logs`
+
+If `westwood.alexgs.me` loads but mining fails:
+1. Confirm `x_tokens` row exists:
+   `task westwood:db:psql` then `SELECT * FROM x_tokens;`
+2. If empty, the bootstrap was never run — see above
+3. If present but expired, re-run the bootstrap
 
 ## Directory Structure
 
