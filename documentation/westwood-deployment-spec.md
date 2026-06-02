@@ -112,7 +112,7 @@ prune).
 # Download the latest release from the official repo (replace the
 # version number with whatever is current at install time — check
 # https://github.com/digitalocean/doctl/releases)
-DOCTL_VERSION=1.159.0
+export DOCTL_VERSION=1.160.0
 cd /tmp
 curl -sL "https://github.com/digitalocean/doctl/releases/download/v${DOCTL_VERSION}/doctl-${DOCTL_VERSION}-linux-amd64.tar.gz" | tar xz
 sudo mv doctl /usr/local/bin/
