@@ -65,13 +65,20 @@ chmod 600 letsencrypt/acme.json
 
 ### 4. Create Host Directories for Bind Mounts
 
-The Convex container persists its search log database to a host-mounted
-directory so writes survive image rebuilds and container restarts. The
-directory must exist before `docker compose up` runs, or the bind mount
-will fail.
+Application data, logs, and databases persist to host-mounted directories
+on the attached block storage volume so writes survive image rebuilds and
+container restarts. These directories must exist before `docker compose up`
+runs, or the bind mounts will fail.
 
 ```bash
-mkdir -p convex-search-log
+mkdir -p /mnt/blockstore/convex/logs
+mkdir -p /mnt/blockstore/convex/search-log
+mkdir -p /mnt/blockstore/actual-budget-data
+mkdir -p /mnt/blockstore/plausible/db-data
+mkdir -p /mnt/blockstore/plausible/event-data
+mkdir -p /mnt/blockstore/plausible/event-logs
+mkdir -p /mnt/blockstore/westwood-db-data
+sudo chown 999:999 /mnt/blockstore/plausible/db-data /mnt/blockstore/westwood-db-data
 ```
 
 ### 5. Start Services
@@ -356,8 +363,19 @@ enceladus/
 │   └── traefik.yml       # Traefik configuration
 ├── letsencrypt/
 │   └── acme.json         # Let's Encrypt certificates (not committed)
-├── logs/                 # Application logs (not committed)
-└── convex-search-log/    # Convex search log SQLite DB (not committed)
+└── scripts/
+    └── westwood-snapshot*.sh
+
+/mnt/blockstore/            # Block storage volume (not committed)
+├── convex/
+│   ├── logs/                # Application logs
+│   └── search-log/          # Convex search log SQLite DB
+├── actual-budget-data/       # Actual Budget data
+├── plausible/
+│   ├── db-data/              # Plausible Postgres data
+│   ├── event-data/           # Plausible ClickHouse data
+│   └── event-logs/           # Plausible ClickHouse logs
+└── westwood-db-data/          # Westwood Postgres data
 ```
 
 ## Security Notes
