@@ -158,7 +158,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/alexgs/devops/enceladus/actual-budget-data/
+      device: /mnt/blockstore/actual-budget-data/
       o: bind
   convex-search-log:
     driver: local
