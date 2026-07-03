@@ -167,8 +167,23 @@ volumes:
       device: /mnt/blockstore/convex/search-log/
       o: bind
   plausible-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /mnt/blockstore/plausible/db-data/
+      o: bind
   plausible-event-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /mnt/blockstore/plausible/event-data/
+      o: bind
   plausible-event-logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /mnt/blockstore/plausible/event-logs/
+      o: bind
 
 networks:
   webapp-net:
