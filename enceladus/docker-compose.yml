@@ -152,7 +152,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/alexgs/devops/enceladus/logs/
+      device: /mnt/blockstore/convex/logs/
       o: bind
   actual-budget-data:
     driver: local
@@ -164,7 +164,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/alexgs/devops/enceladus/convex-search-log/
+      device: /mnt/blockstore/convex/search-log/
       o: bind
   plausible-db-data:
   plausible-event-data:
