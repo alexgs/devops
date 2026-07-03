@@ -156,8 +156,8 @@ change"):
 ```
 # Westwood block storage volume — daily snapshot at 06:00 UTC,
 # prune anything older than 7 days at 06:30 UTC.
-  0  6  *  *  *  /home/alexgs/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot >> /home/alexgs/cron.log 2>&1
- 30  6  *  *  *  /home/alexgs/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot-prune >> /home/alexgs/cron.log 2>&1
+  0  6  *  *  *  /usr/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot >> /home/alexgs/cron.log 2>&1
+ 30  6  *  *  *  /usr/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot-prune >> /home/alexgs/cron.log 2>&1
 ```
 
 The format matches the pattern from `daphnis/crontab.txt` —
@@ -463,8 +463,8 @@ the operator's actual crontab on enceladus. Contents:
 
 # Westwood block storage volume — daily snapshot at 06:00 UTC,
 # prune anything older than 7 days at 06:30 UTC.
-  0  6  *  *  *  /home/alexgs/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot >> /home/alexgs/cron.log 2>&1
- 30  6  *  *  *  /home/alexgs/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot-prune >> /home/alexgs/cron.log 2>&1
+  0  6  *  *  *  /usr/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot >> /home/alexgs/cron.log 2>&1
+ 30  6  *  *  *  /usr/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot-prune >> /home/alexgs/cron.log 2>&1
 ```
 
 ### 8. `.env.example` (modify)

@@ -14,7 +14,7 @@ CUTOFF_TS=$(date -u -d "${RETENTION_DAYS} days ago" +%s)
 
 doctl compute snapshot list \
   --resource volume \
-  --format ID,Name,Created \
+  --format ID,Name,CreatedAt \
   --no-header | \
 while read -r SNAP_ID NAME CREATED_AT; do
   case "$NAME" in

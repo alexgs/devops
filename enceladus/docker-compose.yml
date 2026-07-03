@@ -68,10 +68,9 @@ services:
     image: postgres:16-alpine
     container_name: plausible_db
     restart: unless-stopped
+    env_file: plausible-db.env
     volumes:
       - plausible-db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=postgres
     networks:
       - webapp-net
 
@@ -80,6 +79,7 @@ services:
     container_name: plausible_events_db
     restart: unless-stopped
     mem_limit: 1g
+    env_file: plausible-events-db.env
     volumes:
       - plausible-event-data:/var/lib/clickhouse
       - plausible-event-logs:/var/log/clickhouse-server
