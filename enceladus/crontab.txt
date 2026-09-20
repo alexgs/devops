@@ -6,3 +6,6 @@
 # prune anything older than 7 days at 06:30 UTC.
   0  6  *  *  *  /usr/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot >> /home/alexgs/cron.log 2>&1
  30  6  *  *  *  /usr/bin/task --taskfile /home/alexgs/devops/enceladus/Taskfile.yml cron:westwood-snapshot-prune >> /home/alexgs/cron.log 2>&1
+
+# weekly image cleanup, Sunday 3am
+0 3 * * 0 /usr/bin/docker image prune -af --filter "until=168h" 2>&1 | /usr/bin/logger -t docker-prune
