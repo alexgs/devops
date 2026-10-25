@@ -400,6 +400,21 @@ sign in.
 task signal-log:update
 ```
 
+**Manual backup:**
+```bash
+task signal-log:backup
+```
+
+This uses SQLite's online backup, so it's safe while the app is running,
+and the copy includes changes still in the WAL. Copies are written to
+`/mnt/blockstore/signal-log/backups/signal-log-<timestamp>.db`, so the
+daily volume snapshots include them. Nothing prunes old copies.
+
+To copy the latest one to the laptop:
+```bash
+scp "alexgs@enceladus:$(ssh alexgs@enceladus 'ls -t /mnt/blockstore/signal-log/backups/*.db | head -1')" .
+```
+
 **API access from the laptop:**
 ```bash
 ssh -N -L 3000:127.0.0.1:3000 alexgs@enceladus

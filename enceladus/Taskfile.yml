@@ -51,6 +51,12 @@ tasks:
 
   # --- SIGNAL LOG COMMANDS ---
 
+  signal-log:backup:
+    cmds:
+      # Runs in /data so backups land in /mnt/blockstore/signal-log/backups.
+      - "docker exec -w /data {{.SIGNAL_LOG_SERVICE}} node /app/apps/server/dist/scripts/backup.js"
+    desc: Write a consistent copy of the Signal Log database
+
   signal-log:logs:
     cmds:
       - "docker compose logs -f {{.SIGNAL_LOG_SERVICE}}"
