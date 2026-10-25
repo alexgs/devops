@@ -8,6 +8,8 @@ Enceladus hosts personal web applications using Docker Compose with Traefik as a
 
 **Current services:**
 - **Convex**: Conversation archive application (`convex.alexgs.me`)
+- **oauth2-proxy**: GitHub sign-in for apps without their own auth, via Traefik forward-auth
+- **Signal Log**: Job-search tracker (`signals.alexgs.me`)
 - **Skyreach**: D&D campaign website (`skyreach.alexgs.me`)
 - **Traefik**: Reverse proxy with automatic HTTPS
 - **Westwood**: Twitter timeline engagement analyzer (`westwood.alexgs.me`)
@@ -39,10 +41,12 @@ cd enceladus
 cp .env.example .env
 cp convex.env.example convex.env
 cp skyreach.env.example skyreach.env
+cp oauth2-proxy.env.example oauth2-proxy.env
 
 # Edit environment files and add your actual API keys and secrets
 nano convex.env
 nano skyreach.env
+nano oauth2-proxy.env
 ```
 
 **Required credentials for Convex:**
@@ -54,6 +58,10 @@ nano skyreach.env
 
 **Required credentials for Skyreach:**
 - Clerk authentication keys (production keys from dashboard.clerk.com)
+
+**Required credentials for oauth2-proxy:**
+- GitHub OAuth app client ID and secret (callback URL `https://signals.alexgs.me/oauth2/callback`)
+- Cookie secret: `openssl rand -base64 32 | tr -- '+/' '-_'`
 
 ### 3. Create Let's Encrypt Storage
 
@@ -78,7 +86,9 @@ mkdir -p /mnt/blockstore/plausible/db-data
 mkdir -p /mnt/blockstore/plausible/event-data
 mkdir -p /mnt/blockstore/plausible/event-logs
 mkdir -p /mnt/blockstore/westwood-db-data
+mkdir -p /mnt/blockstore/signal-log
 sudo chown 999:999 /mnt/blockstore/plausible/db-data /mnt/blockstore/westwood-db-data
+sudo chown 1000:1000 /mnt/blockstore/signal-log
 ```
 
 ### 5. Start Services
@@ -188,6 +198,7 @@ convex.alexgs.me    A    <Enceladus IP>
 enceladus.alexgs.me    A       <Enceladus IP>
 convex.alexgs.me       CNAME   enceladus.alexgs.me
 skyreach.alexgs.me     CNAME   enceladus.alexgs.me
+signals.alexgs.me      CNAME   enceladus.alexgs.me
 ```
 
 Using CNAME records means you only need to update the IP in one place if it changes.
@@ -351,6 +362,61 @@ If `westwood.alexgs.me` loads but mining fails:
 2. If empty, the bootstrap was never run — see above
 3. If present but expired, re-run the bootstrap
 
+### Signal Log
+
+Signal Log is a single-user job-search tracker with no authentication of
+its own. Traefik sends every request through the `oauth2-proxy`
+forward-auth middleware first, and only the `alexgs` GitHub account can
+sign in.
+
+**Key details:**
+- Image `ghcr.io/alexgs/signal-log:latest`, published by GitHub Actions
+  on every push to `main` in the `signal-log` repo
+- SQLite database at `/mnt/blockstore/signal-log/signal-log.db`, owned
+  by uid 1000 (the container's `node` user)
+- Migrations run on startup
+- `oauth2-proxy` handles `signals.alexgs.me/oauth2/*` (sign-in and the
+  GitHub callback). Everything else on that host goes to the app after
+  the auth check.
+- The app is also published on the host's `127.0.0.1:3000`, without
+  authentication, for the API over an SSH tunnel
+
+**First-time setup:**
+1. Create a GitHub OAuth app with callback URL
+   `https://signals.alexgs.me/oauth2/callback`, then fill in
+   `oauth2-proxy.env`
+2. Add the `signals` CNAME (see DNS Configuration)
+3. Create `/mnt/blockstore/signal-log` (see step 4 of First-Time Setup)
+4. Copy the database from the laptop with the app stopped, so the WAL is
+   checkpointed into the main file:
+   ```bash
+   scp data/signal-log.db alexgs@enceladus:/mnt/blockstore/signal-log/
+   ssh alexgs@enceladus sudo chown 1000:1000 /mnt/blockstore/signal-log/signal-log.db
+   ```
+5. `docker compose up -d oauth2-proxy signal-log`
+
+**Deploy updates:**
+```bash
+task signal-log:update
+```
+
+**API access from the laptop:**
+```bash
+ssh -N -L 3000:127.0.0.1:3000 alexgs@enceladus
+curl -s http://127.0.0.1:3000/api/export -o signal-log-export.json
+```
+
+**Troubleshooting:**
+If `signals.alexgs.me` returns 500 or loops on sign-in:
+1. Check oauth2-proxy logs: `task oauth2-proxy:logs`
+2. Verify the callback URL in the GitHub OAuth app matches
+   `OAUTH2_PROXY_REDIRECT_URL` exactly
+3. Check Traefik routing: `task traefik:logs`
+
+If it signs in but shows a 502, check `task signal-log:logs`. A
+permissions error on `/data` means the host directory isn't owned by
+uid 1000.
+
 ## Directory Structure
 
 ```
@@ -375,6 +441,7 @@ enceladus/
 │   ├── db-data/              # Plausible Postgres data
 │   ├── event-data/           # Plausible ClickHouse data
 │   └── event-logs/           # Plausible ClickHouse logs
+├── signal-log/               # Signal Log SQLite DB
 └── westwood-db-data/          # Westwood Postgres data
 ```
 

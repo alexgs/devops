@@ -31,6 +31,30 @@ services:
       - "traefik.http.routers.convex.tls.certresolver=enceladus-resolver"
       - "traefik.http.services.convex.loadbalancer.server.port=4322"
 
+  signal-log:
+    image: ghcr.io/alexgs/signal-log:latest
+    container_name: signal-log
+    restart: unless-stopped
+    environment:
+      # `date` fields and "days ago" use this zone.
+      TZ: America/New_York
+    volumes:
+      - /mnt/blockstore/signal-log:/data
+    ports:
+      # No authentication on this port; reach it over an SSH tunnel.
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - oauth2-proxy
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.signal-log.rule=Host(`signals.alexgs.me`)"
+      - "traefik.http.routers.signal-log.tls=true"
+      - "traefik.http.routers.signal-log.tls.certresolver=enceladus-resolver"
+      - "traefik.http.routers.signal-log.middlewares=oauth2-proxy@docker"
+      - "traefik.http.services.signal-log.loadbalancer.server.port=3000"
+
   skyreach:
     image: ghcr.io/alexgs/skyreach:main
     container_name: skyreach
@@ -44,6 +68,25 @@ services:
       - "traefik.http.routers.skyreach.tls=true"
       - "traefik.http.routers.skyreach.tls.certresolver=enceladus-resolver"
       - "traefik.http.services.skyreach.loadbalancer.server.port=4321"
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.1
+    container_name: oauth2-proxy
+    restart: unless-stopped
+    env_file: oauth2-proxy.env
+    networks:
+      - webapp-net
+    labels:
+      - "traefik.enable=true"
+      # Sign-in and callback endpoints. This rule is longer than the app's,
+      # so Traefik gives it priority for /oauth2/ paths.
+      - "traefik.http.routers.oauth2-proxy.rule=Host(`signals.alexgs.me`) && PathPrefix(`/oauth2/`)"
+      - "traefik.http.routers.oauth2-proxy.tls=true"
+      - "traefik.http.routers.oauth2-proxy.tls.certresolver=enceladus-resolver"
+      - "traefik.http.services.oauth2-proxy.loadbalancer.server.port=4180"
+      # Forward-auth middleware. Signed-in requests get a 202 from the static
+      # upstream; anything else gets the redirect to GitHub.
+      - "traefik.http.middlewares.oauth2-proxy.forwardauth.address=http://oauth2-proxy:4180/"
 
   plausible:
     image: ghcr.io/plausible/community-edition:v2.1.4
@@ -113,6 +156,7 @@ services:
     depends_on:
       - actual-budget
       - convex
+      - signal-log
       - skyreach
       - westwood
     networks:

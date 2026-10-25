@@ -2,6 +2,7 @@ version: '3'
 
 vars:
   CONVEX_SERVICE: convex
+  SIGNAL_LOG_SERVICE: signal-log
   SKYREACH_SERVICE: skyreach
   WESTWOOD_SERVICE: westwood
 
@@ -40,6 +41,36 @@ tasks:
       - docker pull ghcr.io/alexgs/convex:latest
       - docker compose up -d {{.CONVEX_SERVICE}}
     desc: Pull latest Convex image and restart service
+
+  # --- OAUTH2-PROXY COMMANDS ---
+
+  oauth2-proxy:logs:
+    cmds:
+      - "docker compose logs -f oauth2-proxy"
+    desc: Follow logs for oauth2-proxy (forward-auth) service
+
+  # --- SIGNAL LOG COMMANDS ---
+
+  signal-log:logs:
+    cmds:
+      - "docker compose logs -f {{.SIGNAL_LOG_SERVICE}}"
+    desc: Follow logs for Signal Log service
+
+  signal-log:restart:
+    cmds:
+      - "docker compose restart {{.SIGNAL_LOG_SERVICE}}"
+    desc: Restart Signal Log service
+
+  signal-log:shell:
+    cmds:
+      - "docker exec -it {{.SIGNAL_LOG_SERVICE}} sh"
+    desc: Open a shell on the Signal Log container
+
+  signal-log:update:
+    cmds:
+      - docker pull ghcr.io/alexgs/signal-log:latest
+      - docker compose up -d {{.SIGNAL_LOG_SERVICE}}
+    desc: Pull latest Signal Log image and restart service
 
   # --- SKYREACH COMMANDS ---
 
